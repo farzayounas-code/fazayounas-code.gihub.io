@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6e9e8">
+  <meta name="description" content="Маленькая открытка с большим признанием — для Даши, с любовью.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23a83f59' d='M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z'/%3E%3C/svg%3E">
+  <title>Для Даши — маленькая открытка</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rose-50: oklch(0.955 0.023 12);
+      --rose-100: oklch(0.915 0.042 10);
+      --rose-300: oklch(0.78 0.09 9);
+      --rose-500: oklch(0.62 0.16 8);
+      --wine-700: oklch(0.39 0.11 5);
+      --ink: oklch(0.27 0.025 8);
+      --paper: oklch(0.985 0.009 70);
+      --surface: var(--rose-50);
+      --text: var(--ink);
+      --muted: oklch(0.45 0.045 8);
+      --accent: var(--rose-500);
+      --accent-dark: var(--wine-700);
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Onest", "Segoe UI", sans-serif;
+      --ease-out: cubic-bezier(.22, 1, .36, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; min-height: 100%; }
+    body {
+      min-height: 100dvh;
+      overflow: hidden;
+      color: var(--text);
+      background: var(--surface);
+      font: 16px/1.65 var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button { font: inherit; color: inherit; border: 0; cursor: pointer; }
+    button:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 4px; }
+    button:disabled { cursor: default; }
+    .background { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+    .background::before {
+      content: ""; position: absolute; inset: 0; opacity: .2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+    }
+    .orb { position: absolute; border-radius: 50%; filter: blur(2px); opacity: .58; }
+    .orb-one { width: 60vmax; height: 60vmax; top: -37vmax; right: -18vmax; background: radial-gradient(circle, var(--rose-100), transparent 68%); }
+    .orb-two { width: 48vmax; height: 48vmax; bottom: -29vmax; left: -22vmax; background: radial-gradient(circle, oklch(0.9 0.06 35), transparent 68%); }
+    .ambient-heart { position: absolute; color: var(--rose-300); opacity: .38; animation: drift 8s ease-in-out infinite; }
+    .ambient-heart svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+    .heart-a { width: 22px; height: 22px; left: 8%; top: 21%; transform: rotate(-16deg); }
+    .heart-b { width: 14px; height: 14px; right: 10%; top: 33%; animation-delay: -3s; }
+    .heart-c { width: 30px; height: 30px; right: 7%; bottom: 13%; opacity: .2; animation-delay: -5s; }
+    @keyframes drift { 0%,100% { translate: 0 0; } 50% { translate: 0 -14px; } }
+
+    .experience { position: relative; width: min(100%, 660px); min-height: 100dvh; margin: 0 auto; isolation: isolate; }
+    .topbar {
+      position: fixed; z-index: 20; top: 0; left: 50%; translate: -50% 0;
+      width: min(100%, 660px); padding: max(22px, env(safe-area-inset-top)) 24px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--accent-dark); pointer-events: none;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+    .brand svg { width: 15px; height: 15px; fill: currentColor; }
+    .topbar-note { font-family: var(--font-display); font-size: 16px; font-style: italic; }
+    .scene {
+      position: absolute; inset: 0; min-height: 100dvh; overflow-y: auto; overscroll-behavior: contain;
+      padding: 88px 24px max(32px, env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; align-items: center;
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transform: translateY(14px) scale(.98);
+      transition: opacity .45s var(--ease-out), transform .45s var(--ease-out), visibility 0s linear .45s;
+    }
+    .scene.is-active {
+      opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+      transition: opacity .55s var(--ease-out), transform .55s var(--ease-out), visibility 0s;
+    }
+    .eyebrow { color: var(--accent-dark); font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+    h1, h2, p { text-wrap: balance; }
+    h1, h2 { font-family: var(--font-display); font-weight: 500; }
+    .primary-button {
+      min-height: 52px; padding: 14px 23px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+      color: var(--paper); background: var(--accent-dark); font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 24px oklch(0.39 0.11 5 / .16);
+      transition: transform .2s var(--ease-out), background .2s, box-shadow .2s;
+    }
+    .primary-button:hover { background: oklch(0.34 0.1 5); transform: translateY(-2px); box-shadow: 0 12px 28px oklch(0.39 0.11 5 / .2); }
+    .primary-button:active { transform: translateY(0) scale(.98); }
+    .primary-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+
+    /* Конверт */
+    .intro { justify-content: center; }
+    .intro-copy { width: 100%; text-align: center; position: relative; z-index: 2; }
+    .intro h1 { margin: 8px 0 10px; font-size: clamp(76px, 21vw, 128px); line-height: .82; letter-spacing: -.055em; }
+    .intro h1 em { display: block; margin-left: .55em; color: var(--accent-dark); font-weight: 500; }
+    .intro-description { max-width: 310px; margin: 20px auto 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .envelope-wrap { margin-top: 30px; display: flex; flex-direction: column; align-items: center; }
+    .envelope-button { position: relative; width: min(78vw, 360px); aspect-ratio: 1.52; background: transparent; perspective: 900px; }
+    .envelope-button:focus-visible { outline-offset: 9px; border-radius: 12px; }
+    .envelope-shadow { position: absolute; left: 9%; right: 9%; bottom: -9%; height: 16%; border-radius: 50%; background: oklch(0.39 0.11 5 / .18); filter: blur(17px); transition: transform .3s, opacity .3s; }
+    .envelope { position: absolute; inset: 0; filter: drop-shadow(0 15px 18px oklch(0.39 0.11 5 / .12)); transition: transform .25s var(--ease-out); }
+    .envelope-button:hover .envelope { transform: translateY(-5px) rotate(-1deg); }
+    .envelope-button:hover .envelope-shadow { transform: scale(.94); opacity: .75; }
+    .envelope-back { position: absolute; inset: 0; border: 1px solid oklch(0.82 0.06 12); border-radius: 5px 5px 12px 12px; background: oklch(0.85 0.06 12); }
+    .letter-peek {
+      position: absolute; z-index: 1; left: 5%; right: 5%; top: 5%; height: 88%; border-radius: 5px;
+      background: var(--paper); color: var(--accent-dark); display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 27px; font-style: italic;
+      transform: translateY(8%); transition: transform .75s var(--ease-out);
+    }
+    .letter-peek::after { content: ""; position: absolute; inset: 10px; border: 1px solid var(--rose-100); }
+    .envelope-front { position: absolute; z-index: 2; inset: 0; border-radius: 5px 5px 12px 12px; overflow: hidden; }
+    .envelope-front::before, .envelope-front::after { content: ""; position: absolute; inset: 0; }
+    .envelope-front::before { background: oklch(0.94 0.035 14); clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%); }
+    .envelope-front::after { background: linear-gradient(145deg, oklch(0.92 0.042 14), oklch(0.85 0.055 12)); clip-path: polygon(0 100%, 0 12%, 50% 64%, 100% 12%, 100% 100%); }
+    .envelope-flap {
+      position: absolute; z-index: 3; inset: 0 0 42%; transform-origin: top;
+      background: linear-gradient(160deg, oklch(0.94 0.032 14), oklch(0.86 0.055 12)); clip-path: polygon(0 0, 100% 0, 50% 100%);
+      filter: drop-shadow(0 3px 2px oklch(0.39 0.11 5 / .13));
+      transition: transform .65s var(--ease-out), z-index 0s .3s;
+    }
+    .seal {
+      position: absolute; z-index: 4; left: 50%; top: 49%; translate: -50% -50%;
+      width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+      background: var(--accent-dark); color: var(--rose-50); box-shadow: 0 3px 0 oklch(0.3 0.08 5), inset 0 0 0 4px oklch(0.55 0.1 5);
+      transition: transform .35s var(--ease-out), opacity .25s;
+    }
+    .seal svg { width: 23px; height: 23px; fill: currentColor; }
+    .envelope-button.is-opening .envelope-flap { transform: rotateX(180deg); z-index: 0; }
+    .envelope-button.is-opening .seal { transform: scale(.5) rotate(18deg); opacity: 0; }
+    .envelope-button.is-opening .letter-peek { transform: translateY(-72%); }
+    .envelope-hint { margin-top: 18px; color: var(--accent-dark); font-size: 12px; letter-spacing: .04em; display: flex; align-items: center; gap: 8px; }
+    .envelope-hint::before, .envelope-hint::after { content: ""; width: 24px; height: 1px; background: var(--rose-300); }
+
+    /* Письмо */
+    .letter-scene { justify-content: center; }
+    .letter-paper {
+      position: relative; width: 100%; max-width: 510px; padding: 38px 30px 32px;
+      background: var(--paper); box-shadow: 0 22px 60px oklch(0.39 0.11 5 / .13);
+      transform: rotate(-.8deg);
+    }
+    .letter-paper::before { content: ""; position: absolute; inset: 10px; border: 1px solid var(--rose-100); pointer-events: none; }
+    .paper-heart { position: absolute; top: 21px; right: 24px; width: 20px; height: 20px; color: var(--rose-300); }
+    .paper-heart svg { fill: currentColor; }
+    .letter-paper h2 { margin: 15px 0 18px; font-size: clamp(39px, 10vw, 56px); line-height: 1.02; letter-spacing: -.025em; }
+    .letter-text { color: var(--muted); font-size: 15px; line-height: 1.72; }
+    .letter-text p + p { margin-top: 12px; }
+    .letter-date { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rose-100); display: flex; align-items: center; gap: 16px; color: var(--accent-dark); }
+    .letter-date strong { font-family: var(--font-display); font-size: 38px; font-weight: 500; line-height: 1; letter-spacing: -.03em; }
+    .letter-date span { max-width: 210px; font-size: 11px; line-height: 1.5; letter-spacing: .06em; text-transform: uppercase; }
+    .signature { margin-top: 16px; color: var(--accent-dark); font-family: var(--font-display); font-size: 26px; font-style: italic; text-align: right; }
+    .letter-scene .primary-button { margin-top: 28px; flex-shrink: 0; }
+
+    /* Причины */
+    .reasons-scene { justify-content: center; text-align: center; }
+    .reasons-scene h2 { max-width: 510px; margin: 12px 0 24px; font-size: clamp(43px, 11vw, 62px); line-height: .98; letter-spacing: -.03em; }
+    .reason-display { position: relative; width: 100%; max-width: 500px; min-height: 220px; display: grid; place-items: center; }
+    .quote-mark { position: absolute; top: -25px; left: 2%; color: var(--rose-100); font-family: var(--font-display); font-size: 160px; line-height: 1; pointer-events: none; }
+    .reason-text { position: relative; z-index: 1; max-width: 430px; font-family: var(--font-display); font-size: clamp(29px, 7.6vw, 40px); line-height: 1.16; transition: opacity .2s, transform .2s; }
+    .reason-text.is-changing { opacity: 0; transform: translateY(8px) scale(.98); }
+    .reason-progress { display: flex; gap: 7px; margin: 18px 0 28px; }
+    .reason-dot { width: 22px; height: 3px; border-radius: 4px; background: var(--rose-100); transition: background .2s, width .2s; }
+    .reason-dot.is-active { width: 36px; background: var(--accent-dark); }
+    .reason-count { margin-top: 16px; color: var(--muted); font-size: 11px; letter-spacing: .15em; }
+
+    /* Вопрос */
+    .question-scene { justify-content: center; text-align: center; }
+    .question-heart { width: 64px; height: 64px; margin-bottom: 20px; color: var(--accent); animation: heartbeat 2.4s ease-in-out infinite; }
+    .question-heart svg { width: 100%; height: 100%; fill: currentColor; }
+    @keyframes heartbeat { 0%,100% { transform: scale(1); } 12% { transform: scale(1.08); } 24% { transform: scale(1); } }
+    .question-scene h2 { max-width: 530px; margin: 12px 0 14px; font-size: clamp(52px, 13vw, 76px); line-height: .96; letter-spacing: -.035em; }
+    .question-note { max-width: 350px; color: var(--muted); font-size: 14px; }
+    .answer-playground { position: relative; width: 100%; max-width: 460px; height: 210px; margin-top: 12px; }
+    .answer-button { position: absolute; min-width: 130px; min-height: 52px; border-radius: 999px; padding: 13px 24px; font-size: 15px; font-weight: 500; transition: left .22s var(--ease-out), top .22s var(--ease-out), transform .22s var(--ease-out), background .2s; }
+    .yes-button { z-index: 2; left: 50%; top: 28px; transform: translateX(-50%); color: var(--paper); background: var(--accent-dark); box-shadow: 0 8px 24px oklch(0.39 0.11 5 / .16); }
+    .yes-button:hover { transform: translateX(-50%) scale(1.04); background: oklch(0.34 0.1 5); }
+    .yes-button:active { transform: translateX(-50%) scale(.98); }
+    .no-button { left: calc(50% - 65px); top: 122px; color: var(--accent-dark); background: transparent; border: 1px solid var(--rose-300); }
+    .no-button:hover { background: var(--rose-100); }
+
+    /* Финал */
+    .finale-scene { justify-content: center; text-align: center; }
+    .finale-art { position: relative; width: 190px; height: 172px; margin-bottom: 14px; display: grid; place-items: center; }
+    .finale-heart { position: relative; z-index: 2; width: 124px; color: var(--accent); filter: drop-shadow(0 14px 24px oklch(0.62 0.16 8 / .24)); animation: finale-pop .8s var(--ease-out) both; }
+    .finale-heart svg { display: block; width: 100%; fill: currentColor; }
+    .finale-ring { position: absolute; inset: 0; border: 1px solid var(--rose-300); border-radius: 50%; opacity: .45; animation: ring-in 1s var(--ease-out) both; }
+    .finale-ring::before, .finale-ring::after { content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-dark); }
+    .finale-ring::before { left: 16px; top: 33px; }
+    .finale-ring::after { right: 10px; bottom: 47px; }
+    @keyframes finale-pop { from { opacity: 0; transform: scale(.5) rotate(-8deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+    @keyframes ring-in { from { opacity: 0; transform: scale(.7); } to { opacity: .45; transform: scale(1); } }
+    .finale-scene h2 { margin: 8px 0 16px; font-size: clamp(58px, 15vw, 88px); line-height: .9; letter-spacing: -.04em; }
+    .finale-copy { max-width: 390px; color: var(--muted); font-size: 15px; }
+    .finale-love { margin: 22px 0 28px; color: var(--accent-dark); font-family: var(--font-display); font-size: 28px; font-style: italic; }
+    .replay-button { min-height: 48px; padding: 12px 20px; display: inline-flex; align-items: center; gap: 9px; color: var(--accent-dark); background: transparent; border-bottom: 1px solid var(--rose-300); font-size: 13px; transition: color .2s, border-color .2s; }
+    .replay-button:hover { color: var(--accent); border-color: var(--accent); }
+    .replay-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    #confetti { position: fixed; z-index: 30; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (min-width: 700px) {
+      .scene { padding-left: 42px; padding-right: 42px; }
+      .intro { justify-content: flex-start; padding-top: 120px; }
+      .intro-copy { text-align: left; }
+      .intro h1 { font-size: 112px; }
+      .intro h1 em { margin-left: .65em; }
+      .intro-description { margin-left: 0; }
+      .envelope-wrap { position: absolute; right: -88px; bottom: 18%; transform: rotate(5deg); }
+      .envelope-button { width: 350px; }
+      .letter-scene { padding-top: 100px; padding-bottom: 40px; }
+      .heart-a { left: 22%; }
+      .heart-b { right: 22%; }
+      .heart-c { right: 18%; }
+    }
+    @media (max-height: 760px) {
+      .intro { justify-content: flex-start; padding-top: 90px; }
+      .intro h1 { font-size: clamp(64px, 17vh, 92px); }
+      .intro-description { margin-top: 12px; }
+      .envelope-wrap { margin-top: 22px; }
+      .envelope-button { width: min(65vw, 300px); }
+      .envelope-hint { margin-top: 12px; }
+      .letter-paper { padding-top: 32px; padding-bottom: 26px; }
+      .letter-paper h2 { margin-top: 10px; margin-bottom: 12px; }
+      .letter-text { font-size: 14px; line-height: 1.58; }
+      .signature { margin-top: 12px; }
+      .letter-scene .primary-button { margin-top: 20px; }
+      .reasons-scene h2 { font-size: clamp(38px, 7vh, 54px); margin-bottom: 10px; }
+      .reason-display { min-height: 180px; }
+      .question-heart { width: 48px; height: 48px; margin-bottom: 10px; }
+      .question-scene h2 { font-size: clamp(48px, 9vh, 68px); }
+      .answer-playground { height: 180px; }
+      .finale-art { width: 140px; height: 126px; margin-bottom: 5px; }
+      .finale-heart { width: 96px; }
+      .finale-scene h2 { font-size: clamp(52px, 10vh, 72px); }
+      .finale-love { margin: 14px 0 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <div class="orb orb-one"></div><div class="orb orb-two"></div>
+    <span class="ambient-heart heart-a"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2 0.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></span>
+    <span class="ambient-heart heart-b"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2 0.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></span>
+    <span class="ambient-heart heart-c"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2 0.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></span>
+  </div>
+
+  <header class="topbar">
+    <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg>для тебя</div>
+    <span class="topbar-note">с любовью</span>
+  </header>
+
+  <main class="experience" id="experience">
+    <section class="scene intro is-active" data-scene="intro" aria-hidden="false">
+      <div class="intro-copy">
+        <p class="eyebrow">Даше. Только тебе.</p>
+        <h1 tabindex="-1">Для <em>Даши</em></h1>
+        <p class="intro-description">Здесь кое-что, что давно живёт у меня в сердце.</p>
+      </div>
+      <div class="envelope-wrap">
+        <button class="envelope-button" id="openEnvelope" aria-label="Открыть конверт с письмом">
+          <span class="envelope-shadow"></span>
+          <span class="envelope">
+            <span class="envelope-back"></span>
+            <span class="letter-peek">только тебе</span>
+            <span class="envelope-front"></span>
+            <span class="envelope-flap"></span>
+            <span class="seal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></span>
+          </span>
+        </button>
+        <p class="envelope-hint">нажми на конверт</p>
+      </div>
+    </section>
+
+    <section class="scene letter-scene" data-scene="letter" aria-hidden="true">
+      <article class="letter-paper">
+        <span class="paper-heart" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></span>
+        <p class="eyebrow">письмо для Даши</p>
+        <h2 tabindex="-1">Привет,<br>моя хорошая Даша.</h2>
+        <div class="letter-text">
+          <p>Моё любимое место — рядом с тобой. Ты умеешь делать обычные дни особенными, а самые простые моменты — теми, которые хочется запомнить.</p>
+          <p>Пусть эта маленькая открытка напоминает: ты очень дорога мне. Не за что-то одно, а за всё, чем ты являешься.</p>
+        </div>
+        <p class="letter-date"><strong>26.09</strong><span>моя самая любимая дата — день, с которого началась наша история</span></p>
+        <p class="signature">с любовью, твой Сёма Ларин</p>
+      </article>
+      <button class="primary-button" id="toReasons">Почему ты мне нравишься<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
+    </section>
+
+    <section class="scene reasons-scene" data-scene="reasons" aria-hidden="true">
+      <p class="eyebrow">и это ещё не всё</p>
+      <h2 tabindex="-1">В тебе столько всего, что я люблю.</h2>
+      <div class="reason-display" aria-live="polite">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <p class="reason-text" id="reasonText"></p>
+      </div>
+      <div class="reason-progress" id="reasonProgress" aria-hidden="true"></div>
+      <button class="primary-button" id="nextReason">Ещё одна причина<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
+      <p class="reason-count" id="reasonCount"></p>
+    </section>
+
+    <section class="scene question-scene" data-scene="question" aria-hidden="true">
+      <div class="question-heart" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></div>
+      <p class="eyebrow">самый важный вопрос</p>
+      <h2 tabindex="-1">Ты тоже меня любишь?</h2>
+      <p class="question-note">Только честно… хотя один из вариантов немного стесняется.</p>
+      <div class="answer-playground" id="answerPlayground">
+        <button class="answer-button yes-button" id="yesButton">Да, очень</button>
+        <button class="answer-button no-button" id="noButton">Нет</button>
+      </div>
+    </section>
+
+    <section class="scene finale-scene" data-scene="finale" aria-hidden="true">
+      <div class="finale-art" aria-hidden="true">
+        <div class="finale-ring"></div>
+        <div class="finale-heart"><svg viewBox="0 0 24 24"><path d="M12 21S3 15.6 3 8.8C3 5.6 5.2 3.5 8 3.5c1.7 0 3.2.9 4 2.2.8-1.3 2.3-2.2 4-2.2 2.8 0 5 2.1 5 5.3C21 15.6 12 21 12 21Z"/></svg></div>
+      </div>
+      <p class="eyebrow">моё самое любимое «да»</p>
+      <h2 tabindex="-1">Ты сделала мой день.</h2>
+      <p class="finale-copy">И, наверное, всю мою жизнь. Спасибо, что ты есть. Спасибо за это «да».</p>
+      <p class="finale-love">Люблю тебя, Даша. Сегодня, завтра и ещё очень-очень долго.</p>
+      <button class="replay-button" id="replayButton"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 2 7M4 4v6h6"/></svg>Прожить ещё раз</button>
+    </section>
+  </main>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="sr-only" id="announcement" aria-live="polite"></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
